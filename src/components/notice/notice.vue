@@ -1,15 +1,12 @@
-<script setup>
+﻿<script setup>
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.js'
 import 'swiper/css'
 import 'swiper/css/navigation'
-import { RouterLink, RouterView } from 'vue-router'
 import ChatPopup from '@/components/chat/ChatPopup.vue';
 
 import FullScreenLoading from '@/components/common/FullScreenLoading.vue'
 import Navbar from '@/components/common/Navbar.vue'
-import Footer from '@/components/common/Footer.vue';
-import BackToTop from '@/components/common/BackToTop.vue'
 
 import { useLoadingStore } from '@/stores/loadingStore'
 const loadingStore = useLoadingStore()
@@ -26,11 +23,10 @@ const loadingStore = useLoadingStore()
 
   <!-- 全站聊天室彈窗 -->
   <ChatPopup />
+  <div>TEST</div>
 
   <!-- 全站 Loading 畫面 -->
   <FullScreenLoading :show="loadingStore.isLoading" />
-  <Footer />
-  <BackToTop />
 </template>
 
 <style scoped>
