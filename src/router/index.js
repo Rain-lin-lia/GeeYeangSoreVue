@@ -27,19 +27,6 @@ const router = createRouter({
       name: "InputDemo",
       component: InputDemo,
     },
-    //註冊畫面 測試用
-    {
-      path: "/login",
-      name: "login",
-      component: () => import("@/components/login/LoginModal.vue"),
-    },
-
-    //彈窗 測試用
-    {
-      path: "/inputmodel",
-      name: "inputmodel",
-      component: () => import("@/components/InputModal.vue"),
-    },
     //收藏頁面
     {
       path: "/user/favorite",
@@ -129,6 +116,11 @@ const router = createRouter({
       path: "/contact",
       name: "contact",
       component: () => import("@/views/contact/Contact.vue"),
+    },
+    {
+      path: "/guide",
+      name: "guide",
+      component: () => import("@/views/guide/Guide.vue"),
     },
   ],
 });
