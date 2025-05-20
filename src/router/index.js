@@ -46,36 +46,33 @@ const router = createRouter({
       name: "UserProfile",
       component: () => import("@/views/UserHome/UserProfile.vue"),
     },
+    //物件管理
     {
       path: "/landlord/property-manage",
       name: "landlord-property-manage",
       component: () => import("@/views/landlord/PropertyManage.vue"),
     },
+    //刊登物件
     {
       path: "/landlord/property-create",
       name: "landlord-property-create",
       component: () => import("@/views/landlord/PropertyCreate.vue"),
     },
-    //
+    //物件詳細資訊
     {
       path: "/landlord/property-detail-form",
       name: "landlord-property-detail-form",
       component: () => import("@/views/landlord/PropertyDetailForm.vue"),
     },
+    //廣告方案頁面
     {
       path: "/landlord/property-plan-select",
       name: "landlord-property-plan-select",
       component: () => import("@/views/landlord/PropertyPlanSelect.vue"),
     },
-
-    {
-      path: "/landlord/property-stats",
-      name: "landlord-property-stats",
-      component: () => import("@/views/landlord/PropertyStats.vue"),
-    },
     //房東編輯
     {
-      path: "/landlord/property-edit",
+      path: "/landlord/property-edit/:id",
       name: "landlord-property-edit",
       component: () => import("@/views/landlord/PropertyEdit.vue"),
     },
@@ -122,6 +119,35 @@ const router = createRouter({
       name: "guide",
       component: () => import("@/views/guide/Guide.vue"),
     },
+    // 廣告管理（刊登管理合併）
+    {
+      path: "/landlord/ad-manage",
+      name: "landlord-ad-manage",
+      component: () => import("@/views/landlord/AdManage.vue"),
+    },
+    // 廣告購買專區
+    {
+      path: "/landlord/ad-purchase",
+      name: "landlord-ad-purchase",
+      component: () => import("@/views/landlord/AdPurchase.vue"),
+    },
+    // 金流 API 測試開始
+    {
+      path: "/payment-test",
+      name: "payment-test",
+      component: () => import("@/views/PaymentTest.vue"),
+    },
+    {
+      path: '/landlord/payment-result/:orderId',
+      name: 'PaymentResult',
+      component: () => import('@/views/landlord/PaymentResultView.vue'),
+    },
+    {
+      path: '/frontend/ad-confirm/:orderId',
+      name: 'AdConfirm',
+      component: () => import('@/views/landlord/PaymentResultView.vue'),
+    }
+    // 金流 API 測試結束
   ],
 });
 

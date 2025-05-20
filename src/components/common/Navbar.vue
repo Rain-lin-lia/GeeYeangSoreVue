@@ -1,19 +1,10 @@
 <template>
   <!-- 導航列元件 -->
-  <nav
-    class="navbar navbar-expand-lg fixed-top"
-    id="mainNav"
-    :class="{ 'navbar-scrolled': isScrolled }"
-  >
+  <nav class="navbar navbar-expand-lg fixed-top" id="mainNav" :class="{ 'navbar-scrolled': isScrolled }">
     <div class="container">
       <!-- 左側 Logo 與名稱 -->
       <a class="navbar-brand" href="#">
-        <img
-          src="/image/logo2.png"
-          alt="租屋平台"
-          class="nav-logo"
-          style="height: 48px; width: 48px"
-        />
+        <img src="/image/logo2.png" alt="租屋平台" class="nav-logo" style="height: 48px; width: 48px" />
       </a>
       <span class="navbar-brand">居研所</span>
 
@@ -23,107 +14,67 @@
       </button>
 
       <!-- 導覽列內容（主選單與登入區） -->
-      <div
-        class="collapse navbar-collapse"
-        :class="{ show: menuOpen }"
-        id="navbarNav"
-      >
+      <div class="collapse navbar-collapse" :class="{ show: menuOpen }" id="navbarNav">
         <ul class="navbar-nav me-auto">
           <!-- 靜態選單項目 -->
           <li class="nav-item">
-            <router-link
-              class="nav-link"
-              to="/"
-              exact-active-class="active"
-              @click="closeMenu"
-              >首頁</router-link
-            >
+            <router-link class="nav-link" to="/" exact-active-class="active" @click="closeMenu">首頁</router-link>
           </li>
           <li class="nav-item">
-            <router-link
-              class="nav-link"
-              to="/PropertySearch"
-              exact-active-class="active"
-              @click="closeMenu"
-              >搜尋房源</router-link
-            >
+            <router-link class="nav-link" to="/PropertySearch" exact-active-class="active"
+              @click="closeMenu">搜尋房源</router-link>
           </li>
 
           <!-- 聯絡我們（滑鼠移入展開） -->
-          <li
-            class="nav-item dropdown"
-            @mouseenter="isHelpAccordionOpen = true"
-            @mouseleave="isHelpAccordionOpen = false"
-          >
+          <li class="nav-item dropdown" @mouseenter="isHelpAccordionOpen = true"
+            @mouseleave="isHelpAccordionOpen = false">
             <a class="nav-link dropdown-toggle" href="#">資訊專區</a>
             <div class="accordion-menu" v-show="isHelpAccordionOpen">
               <router-link class="dropdown-item" to="/notice" @click="closeMenu">最新公告</router-link>
-              <router-link class="dropdown-item" to="/contact" @click="closeMenu">聯絡我們</router-link>
+
+
+              <router-link v-if="isLogin" class="dropdown-item" to="/contact" @click="closeMenu">聯絡我們</router-link>
               <router-link class="dropdown-item" to="/guide" @click="closeMenu">指南手冊</router-link>
               <router-link class="dropdown-item" to="/about" @click="closeMenu">關於居研所</router-link>
+
+
             </div>
           </li>
 
           <!-- 房東專區 或 成為房東 -->
-          <li v-if="isLogin" class="nav-item dropdown" @mouseenter="isLandlordAccordionOpen = true"
+          <li class="nav-item dropdown" v-if="isLogin" @mouseenter="isLandlordAccordionOpen = true"
             @mouseleave="isLandlordAccordionOpen = false">
-            <template v-if="role === 'landlord' || role === 'both'">
-              <a class="nav-link dropdown-toggle" href="#">房東專區</a>
+            <template v-if="userStore.isLandlord">
+              <a class="nav-link dropdown-toggle" href="#">
+                房東專區
+              </a>
               <div class="accordion-menu" v-show="isLandlordAccordionOpen">
-                <router-link
-                  class="dropdown-item"
-                  to="/landlord/property-manage"
-                  @click="closeMenu"
-                  >物件管理</router-link
-                >
-                <router-link
-                  class="dropdown-item"
-                  to="/landlord/property-stats"
-                  @click="closeMenu"
-                  >刊登成效追蹤</router-link
-                >
+                <router-link class="dropdown-item" to="/landlord/property-manage" @click="closeMenu">物件管理</router-link>
+                <router-link class="dropdown-item" to="/landlord/ad-manage" @click="closeMenu">刊登管理</router-link>
+                <router-link class="dropdown-item" to="/landlord/ad-purchase" @click="closeMenu">廣告購買專區</router-link>
               </div>
             </template>
             <template v-else>
-              <a
-                class="nav-link"
-                href="#"
-                @click.prevent="showBecomeLandlordModal"
-                >成為房東</a
-              >
+              <a class="nav-link" href="#" @click.prevent="showBecomeLandlordModal">成為房東</a>
             </template>
           </li>
-          <!-- 房源管理（雙重身分顯示） -->
-<li v-if="isLogin && role === 'both'" class="nav-item">
-  <a class="nav-link" href="#" @click="closeMenu">房源管理</a>
-</li>
         </ul>
 
         <!-- 右側登入與個人區域 -->
         <ul class="navbar-nav">
-          <!-- 未登入狀態 -->
-          <template v-if="!isLogin">
-            <li class="nav-item">
-              <Button color="primary" class="me-2" @click="$emit('open-login')">
-                登入/註冊
-              </Button>
-            </li>
-          </template>
-
-          <!-- 已登入狀態 -->
+          <!-- 如果尚未登入，顯示登入/註冊 -->
+          <li class="nav-item" v-if="!isLogin">
+            <Button color="primary" class="me-2 login-btn" @click="$emit('open-login')">
+              登入/註冊
+            </Button>
+          </li>
+          <!-- 如果已登入 -->
           <template v-else>
             <!-- 聊天室 -->
             <li class="nav-item nav-icon-item">
               <a class="nav-link" href="#" @click="openChatPopup">
                 <span class="icon-wrapper">
                   <i class="fa-solid fa-comments"></i>
-                  <Badge
-                    isDot
-                    color="#ff9800"
-                    :size="10"
-                    :top="'-2px'"
-                    :right="'-6px'"
-                  />
                 </span>
                 聊天室
               </a>
@@ -132,47 +83,25 @@
             <!-- 收藏 -->
             <li class="nav-item nav-icon-item position-relative">
               <a class="nav-link" href="#" @click="toggleFavoritePopup">
-                <span class="icon-wrapper"
-                  ><i class="fa-solid fa-heart"></i
-                ></span>
+                <span class="icon-wrapper"><i class="fa-solid fa-heart"></i></span>
                 收藏
               </a>
-              <FavoritePopup
-                :visible="showFavoritePopup"
-                :favorites="favoriteList"
-                @remove="removeFavorite"
-                @close="showFavoritePopup = false"
-              />
+              <FavoritePopup :visible="showFavoritePopup" @close="showFavoritePopup = false" />
             </li>
 
             <!-- 通知 -->
-            <li
-              class="nav-item nav-icon-item dropdown"
-              style="position: relative"
-            >
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                @click.prevent="toggleNotification"
-              >
-                <span class="icon-wrapper"
-                  ><i class="fa-solid fa-bell"></i
-                ></span>
+            <li class="nav-item nav-icon-item dropdown" style="position: relative">
+              <a class="nav-link dropdown-toggle" href="#" @click.prevent="toggleNotification">
+                <span class="icon-wrapper"><i class="fa-solid fa-bell"></i></span>
                 通知
               </a>
 
               <!-- 顯示通知清單 -->
-              <NewAlert
-                v-if="isNotificationOpen"
-                :notifications="notifications"
-              />
+              <NewAlert v-if="isNotificationOpen" :notifications="notifications" />
             </li>
             <!-- 個人頁面（滑鼠移入展開） -->
-            <li
-              class="nav-item nav-icon-item dropdown"
-              @mouseenter="isProfileAccordionOpen = true"
-              @mouseleave="isProfileAccordionOpen = false"
-            >
+            <li class="nav-item nav-icon-item dropdown" @mouseenter="isProfileAccordionOpen = true"
+              @mouseleave="isProfileAccordionOpen = false">
               <a class="nav-link dropdown-toggle" href="#">
                 <span class="icon-wrapper">
                   <Avatar :src="userStore.avatar" alt="個人頭像" :size="32" />
@@ -180,29 +109,15 @@
                 個人頁面
               </a>
               <div class="accordion-menu" v-show="isProfileAccordionOpen">
-                <router-link
-                  class="dropdown-item"
-                  to="/UserHome/UserProfile"
-                  @click="closeMenu"
-                  >個人資料</router-link
-                >
-                <router-link
-                  class="dropdown-item"
-                  to="/user/favorite"
-                  @click="closeMenu"
-                  >我的收藏</router-link
-                >
-                <router-link class="dropdown-item" to="/chat" @click="closeMenu"
-                  >聊天室</router-link
-                >
+                <router-link class="dropdown-item" to="/UserHome/UserProfile" @click="closeMenu">個人資料</router-link>
+                <router-link class="dropdown-item" to="/user/favorite" @click="closeMenu">我的收藏</router-link>
+                <router-link class="dropdown-item" to="/chat" @click="closeMenu">聊天室</router-link>
               </div>
             </li>
 
             <!-- 登出按鈕 -->
             <li class="nav-item">
-              <Button color="outline-secondary" class="ms-2" @click="logout"
-                >登出</Button
-              >
+              <Button color="outline-secondary" class="ms-2" @click="logout">登出</Button>
             </li>
           </template>
         </ul>
@@ -215,9 +130,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, defineEmits } from "vue";
+import { ref, onMounted, onUnmounted, defineEmits, computed } from "vue";
 import { useUserStore } from "@/stores/user";
-import { useChatPopupStore } from "@/stores/chatPopup";
 import Button from "@/components/buttons/button.vue";
 import Avatar from "@/components/Avatar.vue";
 import Badge from "@/components/Badge.vue";
@@ -228,12 +142,12 @@ import FavoritePopup from '@/components/favorite/FavoritePopup.vue'
 import propertyImg from '@/assets/images/property/property.jpg'
 import axios from 'axios'
 import { storeToRefs } from 'pinia';
+import { useFavoriteStore } from '@/stores/favoriteStore.js'
 
 
 const router = useRouter();
 const userStore = useUserStore();
-const { role, isLogin } = storeToRefs(userStore);
-const chatPopup = useChatPopupStore();
+const { role, isLogin, isLandlord} = storeToRefs(userStore); 
 const menuOpen = ref(false);
 const showLandlordMenu = ref(false);
 const isLandlordAccordionOpen = ref(false);
@@ -284,12 +198,19 @@ function loginAsBoth() {
   userStore.login("tenant", "房東房客A");
 }
 function logout() {
-  userStore.logout();
+  fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+    .finally(() => {
+      userStore.logout();
+      favoriteStore.list = [];
+      localStorage.removeItem('favorites');
+      router.push('/');
+    });
 }
 function openChatPopup(e) {
   e.preventDefault();
-  chatPopup.open();
+  emit("open-chat");
 }
+
 function goToLandlordRegister() {
   router.push("/landlord");
 }
@@ -367,33 +288,9 @@ const favoriteList = ref([
     rentPrice: 16500,
   },
 ]);
-// onMounted(async () => {
-//   try {
-//     const res = await axios.get('https://localhost:7167/api/Favorites/byUser/1')
-//     favoriteList.value = res.data.slice(0, 5)
-//   } catch (error) {
-//     console.warn('取得收藏清單失敗，使用假資料', error)
-//   }
-// })
+const favoriteStore = useFavoriteStore()
+const favorites = computed(() => favoriteStore.list)
 
-
-// onMounted(async () => {
-//   try {
-//     const res = await axios.get('https://localhost:7167/api/Favorites/byUser/1')
-//     favoriteList.value = res.data.slice(0, 5) 
-//   } catch (error) {
-//     console.warn('取得收藏清單失敗，使用假資料', error)
-//   }
-// })
-
-// onMounted(async () => {
-//   try {
-//     const res = await axios.get('https://localhost:7167/api/Favorites/byUser/1')
-//     favoriteList.value = res.data.slice(0, 5) 
-//   } catch (error) {
-//     console.warn('取得收藏清單失敗，使用假資料', error)
-//   }
-// })
 
 function toggleFavoritePopup(e) {
   e.preventDefault();
@@ -404,18 +301,16 @@ function removeFavorite(id) {
   favoriteList.value = favoriteList.value.filter((f) => f.propertyId !== id);
 }
 
-const emit = defineEmits(["open-login"]);
+const emit = defineEmits(["open-login", "open-chat"]);
 </script>
 
 <style scoped>
 /* 導覽列主區塊樣式 */
 #mainNav {
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 255, 255, 0.6) 40%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  background: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(255, 255, 255, 0.6) 40%,
+      rgba(255, 255, 255, 0) 100%);
   transition: all 0.4s ease;
   padding: 1.2rem 0;
   position: fixed;
@@ -686,4 +581,3 @@ const emit = defineEmits(["open-login"]);
   font-size: 24px;
 }
 </style>
-

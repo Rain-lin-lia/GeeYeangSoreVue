@@ -11,7 +11,7 @@
                 <i class="fa-solid fa-fire"></i> 精選房源
             </h2>
             <div v-intersect="'fadeInRight'">
-                <PropertyCarousel :list="featuredProperties" />
+                <PropertyCarousel :list="featuredProperties" @open-login="handleOpenLogin" />
             </div>
         </div>
         <div id="property-list-section" class="container my-5">
@@ -20,11 +20,26 @@
                 <p>查無符合條件的房源，請嘗試其他搜尋條件。</p>
             </div>
             <div class="row" :key="currentPage">
-                <div class="col-md-3" v-for="(item, i) in pagedList" :key="i" v-intersect="pageDirection === 'next' ? '' : 'fadeInRight'">
-                    <PropertyCard :propertyId="item.propertyId" :image="item.image" :rentPrice="item.rentPrice"
-                        :title="item.title" :city="item.city" :district="item.district" :address="item.address"
-                        :roomCount="item.roomCount" :bathroomCount="item.bathroomCount"
-                        :propertyType="item.propertyType" class="small-card" />
+                <div class="col-md-3" v-for="(item, i) in pagedList" :key="i"
+                    v-intersect="pageDirection === 'next' ? '' : 'fadeInRight'">
+                    <PropertyCard
+                        :propertyId="item.propertyId"
+                        :image="item.image"
+                        :rentPrice="item.rentPrice"
+                        :title="item.title"
+                        :city="item.city"
+                        :district="item.district"
+                        :address="item.address"
+                        :roomCount="item.roomCount"
+                        :bathroomCount="item.bathroomCount"
+                        :propertyType="item.propertyType"
+                        class="small-card"
+                        @open-login="handleOpenLogin"
+                        >
+                        <template #badge v-if="item.badgeType">
+                            <BadgeList :type="item.badgeType" />
+                        </template>
+                    </PropertyCard>
                 </div>
                 <div class="col-md-12 d-flex justify-content-center mt-4">
                     <Pagination v-model="currentPage" :totalItems="propertyList.length" :itemsPerPage="itemsPerPage"
@@ -38,9 +53,10 @@
                 <i class="fa-solid fa-star"></i> 推薦房東
             </h2>
             <div v-intersect="'fadeInRight'">
-                <LandlordCarousel :list="landlordProperties" />
+                <LandlordCarousel :list="landlordProperties" @open-login="handleOpenLogin" @open-chat="handleOpenChat" />
             </div>
         </div>
+        <ChatPopup v-if="isChatOpen" :key="currentChatTenantId" @close="isChatOpen = false" />
     </section>
 
 
@@ -56,7 +72,12 @@ import LandlordCarousel from '@/components/carousel/LandlordCarousel.vue';
 import Pagination from '@/components/Pagination/Pagination.vue';
 import { ref, onMounted, computed, reactive, watch } from 'vue'
 import axios from 'axios'
+import { useFavoriteStore } from '@/stores/favoriteStore'
+import ChatPopup from '@/components/chat/ChatPopup.vue'
+import BadgeList from '@/components/BadgeList.vue'
 
+const favoriteStore = useFavoriteStore()
+const emit = defineEmits(['open-login'])
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const propertyList = ref([])
 const currentPage = ref(1)
@@ -64,14 +85,17 @@ const itemsPerPage = 8
 const previousPage = ref(1)
 const pageDirection = ref('next')
 
+onMounted(async () => {
+  await favoriteStore.fetchFavorites() 
+})
 const pagedList = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage
     return propertyList.value.slice(start, start + itemsPerPage)
 })
 
 watch(currentPage, (newVal, oldVal) => {
-  pageDirection.value = newVal > oldVal ? 'next' : 'prev'
-  previousPage.value = newVal
+    pageDirection.value = newVal > oldVal ? 'next' : 'prev'
+    previousPage.value = newVal
 })
 
 const featuredProperties = ref([])
@@ -113,6 +137,16 @@ async function handleSearch(filter) {
     } catch (err) {
         console.error("搜尋房源失敗：", err)
     }
+}
+function handleOpenLogin() {
+    emit('open-login')
+}
+
+const isChatOpen = ref(false)
+const currentChatTenantId = ref(null)
+function handleOpenChat(landlordTenantId) {
+    currentChatTenantId.value = landlordTenantId
+    isChatOpen.value = true
 }
 </script>
 

@@ -4,6 +4,11 @@
         <div class="carousel-container">
             <!-- 主圖區域 -->
             <div class="main-swiper-wrapper position-relative">
+                <BadgeList
+                    v-if="property.badgeType"
+                    :type="property.badgeType"
+                    class="carousel-badge"
+                />  
                 <button class="follow-btn favorite-icon" @click="toggleFavorite">
                     <i :class="['fa-heart', isFavorited ? 'fa-solid' : 'fa-regular']"
                         :style="{ color: isFavorited ? '#ff9800' : '' }"></i>
@@ -27,7 +32,6 @@
 
         <!-- 右側資訊欄 -->
         <div class="info-container">
-
             <h2 class="title">{{ property.title }}</h2>
             <p class="price">NT$ {{ new Intl.NumberFormat().format(property.rentPrice) }} / 月</p>
             <p class="address">
@@ -54,7 +58,31 @@ import { Navigation, Thumbs } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/thumbs'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useFavoriteStore } from '@/stores/favoriteStore.js'
+import { useUserStore } from '@/stores/user.js'
+import BadgeList from '@/components/BadgeList.vue'
+
+const emit = defineEmits(['open-login'])
+const userStore = useUserStore()
+const favoriteStore = useFavoriteStore()
+const isFavorited = computed(() =>
+    favoriteStore.list.some(item => item.propertyId === props.property.propertyId)
+)
+
+async function toggleFavorite() {
+    if (!userStore.isLogin) {
+        favoriteStore.pendingFavoriteId = props.propertyId
+        emit('open-login')
+        return
+    }
+
+    if (isFavorited.value) {
+        await favoriteStore.removeFavorite(props.property.propertyId)
+    } else {
+        await favoriteStore.addFavorite(props.property.propertyId)
+    }
+}
 
 const thumbsSwiper = ref(null)
 
@@ -71,11 +99,7 @@ function formatDate(dateStr) {
     return new Date(dateStr).toLocaleDateString()
 }
 
-const isFavorited = ref(false)
 
-function toggleFavorite() {
-    isFavorited.value = !isFavorited.value
-}
 </script>
 
 <style scoped>
@@ -203,5 +227,12 @@ function toggleFavorite() {
     position: absolute;
     top: 15px;
     right: 15px;
+}
+
+.carousel-badge {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  z-index: 10;
 }
 </style>

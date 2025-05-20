@@ -10,46 +10,30 @@
           </button>
 
           <!-- 隱私權政策 -->
-          <PrivacyPolicyModal
-            :show="showPrivacyModal"
-            @close="showPrivacyModal = false"
-          />
+          <PrivacyPolicyModal :show="showPrivacyModal" @close="showPrivacyModal = false" />
 
           <!-- 登入表單 -->
           <div class="form-box login">
             <form @submit.prevent="handleLogin">
               <h1>會員登入</h1>
               <div class="input-box">
-                <input
-                  v-model="login.username"
-                  type="text"
-                  placeholder="電子信箱"
-                  required
-                />
+                <input v-model="login.username" type="text" placeholder="電子信箱" required />
                 <i class="fa-solid fa-envelope"></i>
               </div>
               <div class="input-box">
-                <input
-                  v-model="login.password"
-                  :type="showLoginPassword ? 'text' : 'password'"
-                  placeholder="密碼"
-                  required
-                />
-                <div
-                  class="eye-icon-wrapper"
-                  @click="showLoginPassword = !showLoginPassword"
-                >
-                  <i
-                    :class="
-                      showLoginPassword
-                        ? 'fa-solid fa-eye-slash'
-                        : 'fa-solid fa-eye'
-                    "
-                  ></i>
+                <input v-model="login.password" :type="showLoginPassword ? 'text' : 'password'" placeholder="密碼"
+                  required />
+                <div class="eye-icon-wrapper" @click="showLoginPassword = !showLoginPassword">
+                  <i :class="showLoginPassword
+                    ? 'fa-solid fa-eye-slash'
+                    : 'fa-solid fa-eye'
+                    "></i>
                 </div>
               </div>
 
-              <div class="forgot-link"><a href="#">忘記密碼?</a></div>
+              <div class="forgot-link">
+  <a href="#" @click.prevent="showForgotPasswordModal = true">忘記密碼?</a>
+</div>
               <button class="btn">登入</button>
               <p>——使用其他方式登入——</p>
               <div class="social-icons">
@@ -69,76 +53,41 @@
             <form @submit.prevent="handleRegister">
               <h1>會員註冊</h1>
               <div class="input-box">
-                <input
-                  v-model="register.username"
-                  type="text"
-                  placeholder="姓名"
-                  required
-                />
+                <input v-model="register.username" type="text" placeholder="姓名" required />
                 <i class="fa-solid fa-user"></i>
               </div>
               <div class="input-box">
-                <input
-                  v-model="register.userphone"
-                  type="text"
-                  placeholder="手機"
-                  required
-                  pattern="^09\d{8}$"
-                  title="請輸入正確的手機號碼（例如：0912345678）"
-                />
+                <input v-model="register.userphone" type="text" placeholder="手機" required pattern="^09\d{8}$"
+                  title="請輸入正確的手機號碼（例如：0912345678）" />
                 <i class="fa-solid fa-phone"></i>
               </div>
               <div class="input-box">
-                <input
-                  v-model="register.email"
-                  type="email"
-                  placeholder="電子信箱"
-                  required
-                />
+                <input v-model="register.email" type="email" placeholder="電子信箱" required />
                 <i class="fa-solid fa-envelope"></i>
               </div>
               <!-- 註冊表單的密碼欄位 -->
               <div class="input-box">
-                <input
-                  v-model="register.password"
-                  :type="showRegisterPassword ? 'text' : 'password'"
-                  placeholder="密碼"
-                  required
-                  ref="passwordInputRef"
-                  @input="
+                <input v-model="register.password" :type="showRegisterPassword ? 'text' : 'password'" placeholder="密碼"
+                  required ref="passwordInputRef" @input="
                     register.passwordError = '';
-                    passwordInputRef.setCustomValidity('');
-                  "
-                />
-                <div
-                  class="eye-icon-wrapper"
-                  @click="showRegisterPassword = !showRegisterPassword"
-                >
-                  <i
-                    :class="
-                      showRegisterPassword
-                        ? 'fa-solid fa-eye-slash'
-                        : 'fa-solid fa-eye'
-                    "
-                  ></i>
+                  passwordInputRef.setCustomValidity('');
+                  " />
+                <div class="eye-icon-wrapper" @click="showRegisterPassword = !showRegisterPassword">
+                  <i :class="showRegisterPassword
+                    ? 'fa-solid fa-eye-slash'
+                    : 'fa-solid fa-eye'
+                    "></i>
                 </div>
               </div>
 
               <!-- 同意條款勾選 -->
               <div class="input-box agree-box">
                 <label class="agree-label">
-                  <input
-                    type="checkbox"
-                    ref="agreeCheckboxRef"
-                    required
-                    @invalid="handleAgreeInvalid"
-                    @input="handleAgreeInput"
-                  />
+                  <input type="checkbox" ref="agreeCheckboxRef" required @invalid="handleAgreeInvalid"
+                    @input="handleAgreeInput" />
                   <span>
                     我已閱讀並同意
-                    <a href="#" @click.prevent="showPrivacyModal = true"
-                      >隱私權政策</a
-                    >
+                    <a href="#" @click.prevent="showPrivacyModal = true">隱私權政策</a>
                   </span>
                 </label>
                 <!-- 錯誤訊息顯示區塊 -->
@@ -149,19 +98,9 @@
 
               <!-- 驗證碼欄位與發送按鈕：並排放置 -->
               <div class="input-box verify-box">
-                <input
-                  v-model="register.verificationCode"
-                  type="text"
-                  placeholder="請輸入驗證碼"
-                  required
-                />
-                <button
-                  type="button"
-                  class="verify-btn"
-                  :class="{ 'disabled-btn': countdown > 0 }"
-                  :disabled="countdown > 0"
-                  @click="sendVerificationCode"
-                >
+                <input v-model="register.verificationCode" type="text" placeholder="請輸入驗證碼" required />
+                <button type="button" class="verify-btn" :class="{ 'disabled-btn': countdown > 0 }"
+                  :disabled="countdown > 0" @click="sendVerificationCode">
                   <span v-if="countdown > 0">
                     <div>{{ countdown }} 秒後</div>
                     <div>可重新發送</div>
@@ -193,20 +132,47 @@
       </div>
     </div>
   </div>
+  <!-- 忘記密碼 -->
+<ForgotPasswordModal
+  v-if="showForgotPasswordModal"
+  @close="handleForgotClose"
+/>
+
 </template>
 
 <script setup>
 // 引入 Composition API
 import { ref, onMounted } from "vue";
+import { useToast } from 'vue-toastification';
+const toast = useToast();
 // 加入 defineEmits
 const emit = defineEmits(["close"]);
+
+//加入忘記密碼彈窗 控制回登入畫面刷新
+const handleForgotClose = () => {
+  showForgotPasswordModal.value = false;
+  // 重置登入表單
+  login.value = {
+    username: '',
+    password: ''
+  };
+  showLogin(); // 回到登入畫面
+};
+
 
 //引入隱私權政策
 import PrivacyPolicyModal from "@/components/login/PrivacyPolicyModal.vue";
 import { useUserStore } from "@/stores/user";
+import { useFavoriteStore } from '@/stores/favoriteStore.js'
+const favoriteStore = useFavoriteStore()
 const userStore = useUserStore();
 const agreeCheckboxRef = ref(null);
 const agreeError = ref("");
+
+//引入忘記密碼
+import ForgotPasswordModal from "@/components/login/ForgotPasswordModal.vue";
+const showForgotPasswordModal = ref(false);
+
 
 // 控制是否顯示註冊頁面（切換用）
 const isRegister = ref(false);
@@ -225,6 +191,7 @@ const passwordInputRef = ref(null);
 const countdown = ref(0); // 初始為 0 表示可按
 const resendText = ref("發送驗證碼");
 let timer = null;
+const isSending = ref(false); // 是否正在發送驗證碼
 
 // 登入表單資料
 const login = ref({
@@ -267,6 +234,18 @@ const showLogin = () => {
 // 登入事件處理
 const handleLogin = async () => {
   try {
+    // ✅ Step 1：取得 reCAPTCHA token（正式環境：驗證失敗就 return）
+    let recaptchaToken = '';
+    try {
+      await new Promise(resolve => grecaptcha.ready(resolve));
+      recaptchaToken = await grecaptcha.execute('6Ldt9T4rAAAAAG-4q6vmfn9XZIcRhjhczfEUNGyw', { action: 'login' });
+    } catch (err) {
+      console.error('❌ 無法取得 Google reCAPTCHA 驗證，拒絕登入', err);
+      toast.error("系統驗證失敗，請重新整理頁面或稍後再試");
+      return;
+    }
+
+
     const res = await fetch(`${API_BASE_URL}/api/Auth/login`, {
       method: "POST",
       headers: {
@@ -276,30 +255,44 @@ const handleLogin = async () => {
       body: JSON.stringify({
         txtAccount: login.value.username,
         txtPassword: login.value.password,
+        recaptchaToken: recaptchaToken, // ✅ 加入reCAPTCHA token
       }),
     });
 
     // 檢查 HTTP 狀態碼
-    if (!res.ok) {
-      throw new Error("伺服器錯誤，請稍後再試");
-    }
+const data = await res.json();
 
-    // 解析 JSON
-    const data = await res.json();
+if (res.status === 401) {
+  console.warn("登入失敗，401 未授權", data);
+  toast.error(data.message || "帳號或密碼錯誤");
+  return;
+}
 
-    // 判斷回傳格式
-    if (data.success) {
-      userStore.login(data.role || 'tenant', data.userName || data.user || '')
-      // 登入成功自動關閉彈窗
-      emit("close");
-    } else {
-      alert(data.message || "登入失敗");
-    }
+if (!res.ok) {
+  console.error("登入失敗，非 200 回應", data);
+  toast.error(data.message || "伺服器錯誤，請稍後再試");
+  return;
+}
+
+if (data.success) {
+  userStore.login(
+    data.role || "tenant",
+    data.userName || data.user || "",
+    data.isLandlord || false
+  );
+  toast.success("登入成功！歡迎回來");
+  emit("close");
+} else {
+  console.warn("登入回傳 success: false", data);
+  toast.error(data.message || "登入失敗");
+}
   } catch (err) {
-    alert(err.message || "登入時發生錯誤");
-  }
-};
+  console.error("登入發生例外錯誤", err);
+  toast.error(err.message || "登入時發生錯誤");
+}
 
+
+};
 
 // 註冊事件處理
 const handleRegister = async () => {
@@ -338,39 +331,80 @@ const handleRegister = async () => {
       body: JSON.stringify(requestData),
     });
 
-    if (!res.ok) {
-      const errRes = await res.json();
-      alert(errRes.message || "註冊失敗");
-      return;
-    }
+if (!res.ok) {
+  const errRes = await res.json();
+  console.error("註冊失敗", errRes);
+  toast.error(errRes.message || "註冊失敗");
+  return;
+}
 
-    const result = await res.json();
-    if (result.success) {
-      alert(result.message || "註冊成功，請登入");
-      showLogin(); // 自動切換回登入畫面
-    } else {
-      alert(result.message || "註冊失敗");
-    }
-  } catch (err) {
-    alert("註冊時發生錯誤，請稍後再試");
-    console.error("註冊錯誤", err);
-  }
+const result = await res.json();
+if (result.success) {
+  console.log("註冊成功", result);
+  toast.success(result.message || "註冊成功，請登入");
+  showLogin();
+} else {
+  console.warn("註冊回傳失敗", result);
+  toast.error(result.message || "註冊失敗");
+}
+
+} catch (err) {
+  console.error("註冊發生例外", err);
+  toast.error("註冊時發生錯誤，請稍後再試");
+}
+
 };
 
 // 發送驗證碼事件
-const sendVerificationCode = () => {
-  if (countdown.value > 0) return; // 防止重複點擊
+const sendVerificationCode = async () => {
+  if (countdown.value > 0 || isSending.value) return; // 防止重複點擊
 
-  console.log("發送驗證碼至", register.value.email);
-  resendText.value = "重新發送";
-  countdown.value = 30;
+if (!register.value.email) {
+  console.warn("使用者尚未輸入 email");
+  toast.warning("請先輸入電子信箱");
+  return;
+}
 
-  timer = setInterval(() => {
-    countdown.value--;
-    if (countdown.value <= 0) {
-      clearInterval(timer);
-    }
-  }, 1000);
+  isSending.value = true; // 鎖定按鈕
+
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/EmailToken/send-token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userEmail: register.value.email,
+        device: "web", // 裝置資訊可選
+      }),
+    });
+
+const result = await res.text(); // 回傳是字串
+
+if (!res.ok) {
+  console.error("驗證碼 API 回傳錯誤", result);
+  throw new Error(result || "發送驗證碼失敗");
+}
+
+console.log("驗證碼發送成功", result);
+toast.success(result || "驗證碼已發送，請查看信箱 📩");
+
+
+    // ✅ 開始倒數
+    resendText.value = "重新發送";
+    countdown.value = 30;
+    timer = setInterval(() => {
+      countdown.value--;
+      if (countdown.value <= 0) {
+        clearInterval(timer);
+      }
+    }, 1000);
+  } catch (err) {
+  console.error("發送驗證碼錯誤", err);
+  toast.error(err.message || "寄送驗證碼時發生錯誤");
+  } finally {
+    isSending.value = false; // 發送結束解除鎖定
+  }
 };
 
 // 是否同意隱私權政策
@@ -410,12 +444,14 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
 }
+
 .modal-wrapper {
   background-color: transparent;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .modal-content {
   box-shadow: none;
   border: none;
@@ -524,7 +560,8 @@ form {
 .input-box input {
   width: 100%;
   padding: 13px 50px 13px 20px;
-  background: #ffffff; /*  改成白底 */
+  background: #ffffff;
+  /*  改成白底 */
   border-radius: 8px;
   border: none;
   outline: none;
@@ -539,11 +576,13 @@ form {
   top: 0;
   right: 0;
   height: 100%;
-  width: 60px; /* 依需要調整寬度 */
+  width: 60px;
+  /* 依需要調整寬度 */
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(163, 222, 215, 0.5); /* 白色半透明網底 */
+  background: rgba(163, 222, 215, 0.5);
+  /* 白色半透明網底 */
   cursor: pointer;
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
@@ -552,15 +591,19 @@ form {
 
 /* 驗證碼倒數按鈕呈現唯讀狀態 */
 .verify-btn.disabled-btn {
-  background-color: #ccc; /* 改成灰色背景 */
-  cursor: not-allowed; /* 滑鼠顯示禁止 */
-  pointer-events: none; /* 避免 hover 效果 */
+  background-color: #ccc;
+  /* 改成灰色背景 */
+  cursor: not-allowed;
+  /* 滑鼠顯示禁止 */
+  pointer-events: none;
+  /* 避免 hover 效果 */
   color: #727171;
 }
 
 /* 當滑鼠滑過 .eye-icon-wrapper 時的樣式 */
 .eye-icon-wrapper:hover {
-  background-color: #f8dfc6; /* 滑過時淡黃色提示 */
+  background-color: #f8dfc6;
+  /* 滑過時淡黃色提示 */
 }
 
 /* 設定 .eye-icon-wrapper 裡面的 <i> 標籤樣式 */
@@ -710,9 +753,12 @@ form {
 
 /*  註冊 / 登入切換按鈕 hover：白底藍綠字 */
 .toggle-panel .btn:hover {
-  background-color: #ffffff; /* 白底 */
-  color: #4ecdc4; /* 藍綠字 */
-  border: 2px solid #4ecdc4; /* 邊框也改成藍綠 */
+  background-color: #ffffff;
+  /* 白底 */
+  color: #4ecdc4;
+  /* 藍綠字 */
+  border: 2px solid #4ecdc4;
+  /* 邊框也改成藍綠 */
   transition: all 0.3s ease;
 }
 
@@ -720,14 +766,17 @@ form {
 .google-btn {
   display: inline-flex;
   align-items: center;
-  justify-content: center; /*  垂直置中補強 */
-  height: 48px; /*  統一高度為 48px */
+  justify-content: center;
+  /*  垂直置中補強 */
+  height: 48px;
+  /*  統一高度為 48px */
   gap: 10px;
   background-color: #f0f9f8;
   color: #db4437;
   border: 2px solid #db4437;
   border-radius: 6px;
-  padding: 0 16px; /*  左右 padding 固定，高度由 height 控制 */
+  padding: 0 16px;
+  /*  左右 padding 固定，高度由 height 控制 */
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -797,20 +846,29 @@ form {
   position: absolute;
   top: 15px;
   right: 20px;
-  width: 28px; /* 固定寬度 */
-  height: 28px; /* 固定高度 */
-  background: #ffffff; /* 白色圓底 */
+  width: 28px;
+  /* 固定寬度 */
+  height: 28px;
+  /* 固定高度 */
+  background: #ffffff;
+  /* 白色圓底 */
   border: none;
-  border-radius: 50%; /* 做成圓形 */
-  font-size: 18px; /* 字體大小 */
-  font-weight: bold; /* X 加粗 */
-  color: #32a49c; /* 字體顏色 */
+  border-radius: 50%;
+  /* 做成圓形 */
+  font-size: 18px;
+  /* 字體大小 */
+  font-weight: bold;
+  /* X 加粗 */
+  color: #32a49c;
+  /* 字體顏色 */
   cursor: pointer;
   z-index: 10;
-  display: flex; /* 讓 X 置中 */
+  display: flex;
+  /* 讓 X 置中 */
   justify-content: center;
   align-items: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* 陰影感 */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  /* 陰影感 */
   transition: background-color 0.3s, color 0.3s;
 }
 
