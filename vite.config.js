@@ -15,6 +15,9 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      port: 9000,
+      strictPort: true,
+      allowedHosts: ["vue.jayceeswlrorobot.win"],
       proxy: {
         "/api": {
           target: env.VITE_API_BASE_URL,
