@@ -94,6 +94,7 @@ watch(
     v-if="showChatPopup && isUserReady"
     @close="closeChatPopup"
   />
+
 <!-- 全站 Loading 畫面 -->
   <FullScreenLoading :show="loadingStore.isLoading" />
   <Footer />

@@ -16,6 +16,8 @@
           :receiver-id="activeContactId"
           :receiver-role="activeReceiverRole"
           :chat-id="activeChatId"
+          :is-landlord="userStore.isLandlord"
+          :quick-reply-default-open="true"
           @send="sendMessage"
         />
       </div>
@@ -30,6 +32,8 @@
   import ChatWindow from '@/components/chat/ChatWindow.vue';
   import ChatInput from '@/components/chat/ChatInput.vue';
   import defaultAvatar from '@/assets/images/avatar/default.png';
+  import { useMessageLabel } from '@/components/chat/useMessageLabel';
+  import { useUserStore } from '@/stores/user';
   
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
   const SIGNALR_URL = `${API_BASE_URL}/hub`;
@@ -41,6 +45,8 @@
   const activeReceiverRole = ref('tenant');
   const messages = ref([]);
   let connection = null;
+  const { filterBadWords } = useMessageLabel();
+  const userStore = useUserStore();
   
   async function setupSignalR() {
     connection = new signalR.HubConnectionBuilder()
@@ -158,7 +164,8 @@
       });
   }
   
-  onMounted(() => {
+  onMounted(async () => {
+    await userStore.checkAuth();
     fetchChatList();
     setupSignalR();
   });
