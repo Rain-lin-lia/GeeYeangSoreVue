@@ -27,13 +27,12 @@
       <h2 class="section-title">推薦房源</h2>
       <div class="row">
         <div class="col-md-4" v-for="(item, i) in recommendList" :key="'rec' + i">
-          <PropertyCard :image="item.image" :rentPrice="item.rentPrice" :propertyType="item.propertyType"
+          <PropertyCard :propertyId="item.propertyId" :image="item.image" :rentPrice="item.rentPrice" :propertyType="item.propertyType"
             :title="item.title" :city="item.city" :district="item.district" :address="item.address"
             :roomCount="item.roomCount" :bathroomCount="item.bathroomCount" @open-login="handleOpenLogin">
             <template #badge v-if="item.badgeType">
                             <BadgeList :type="item.badgeType" />
                         </template>
-
           </PropertyCard>
         </div>
       </div>
@@ -44,7 +43,7 @@
       <h2 class="section-title">最新上架</h2>
       <div class="row">
         <div class="col-md-4" v-for="(item, i) in newList" :key="'new' + i">
-          <PropertyCard :image="item.image" :rentPrice="item.rentPrice" :propertyType="item.propertyType"
+          <PropertyCard :propertyId="item.propertyId" :image="item.image" :rentPrice="item.rentPrice" :propertyType="item.propertyType"
             :title="item.title" :city="item.city" :district="item.district" :address="item.address"
             :roomCount="item.roomCount" :bathroomCount="item.bathroomCount" @open-login="handleOpenLogin">
             <!-- <template #badge v-if="item.badgeType">
@@ -91,7 +90,6 @@
   </section>
 </template>
 <script setup>
-
 import Carousel from '@/components/Carousel.vue';
 import SearchBar from '@/components/forms/SearchBar.vue';
 import PropertyCard from '@/components/cards/PropertyCard.vue';
@@ -107,77 +105,23 @@ const newList = ref([]);
 
 const emit = defineEmits(['open-login']);
 
-const recommendList = [
-  {
-    image: propertyImg,
-    rentPrice: 15000,
-    propertyType: '套房',
-    title: '精美套房出租',
-    city: '台北市',
-    district: '大安區',
-    address: '忠孝東路三段 123 號',
-    roomCount: 1,
-    bathroomCount: 1
-  },
-  {
-    image: propertyImg,
-    rentPrice: 15000,
-    propertyType: '套房',
-    title: '精美套房出租',
-    city: '台北市',
-    district: '大安區',
-    address: '忠孝東路三段 123 號',
-    roomCount: 1,
-    bathroomCount: 1
-  },
-  {
-    image: propertyImg,
-    rentPrice: 15000,
-    propertyType: '套房',
-    title: '精美套房出租',
-    city: '台北市',
-    district: '大安區',
-    address: '忠孝東路三段 123 號',
-    roomCount: 1,
-    bathroomCount: 1
-  }
-];
+function handleOpenLogin() {
+  emit('open-login');
+}
 
-const newList = [
-  {
-    image: propertyImg,
-    rentPrice: 15000,
-    propertyType: '套房',
-    title: '精美套房出租',
-    city: '台北市',
-    district: '大安區',
-    address: '忠孝東路三段 123 號',
-    roomCount: 1,
-    bathroomCount: 1
-  },
-  {
-    image: propertyImg,
-    rentPrice: 15000,
-    propertyType: '套房',
-    title: '精美套房出租',
-    city: '台北市',
-    district: '大安區',
-    address: '忠孝東路三段 123 號',
-    roomCount: 1,
-    bathroomCount: 1
-  },
-  {
-    image: propertyImg,
-    rentPrice: 15000,
-    propertyType: '套房',
-    title: '精美套房出租',
-    city: '台北市',
-    district: '大安區',
-    address: '忠孝東路三段 123 號',
-    roomCount: 1,
-    bathroomCount: 1
+onMounted(async () => {
+  try {
+    // 獲取推薦房源
+    const recommendRes = await axios.get(`${API_BASE_URL}/api/PropertySearch/featuredProperties`);
+    recommendList.value = recommendRes.data;
+
+    // 獲取最新上架房源
+    const newRes = await axios.get(`${API_BASE_URL}/api/PropertySearch/propertyList`);
+    newList.value = newRes.data.slice(0, 3); // 只取前3筆作為最新上架
+  } catch (error) {
+    console.error('載入房源資料失敗:', error);
   }
-];
+});
 </script>
 <style scoped>
 .recommended-section,
