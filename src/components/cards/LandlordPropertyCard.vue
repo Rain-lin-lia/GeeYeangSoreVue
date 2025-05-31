@@ -98,7 +98,7 @@ function goToDetail() {
 
 const favoriteStore = useFavoriteStore()
 const isFavorited = computed(() => {
-  return userStore.isLogin && favoriteStore.list.some(item => item.propertyId === props.propertyId)
+  return favoriteStore.list.some(item => item.propertyId === props.propertyId)
 })
 const tenantId = localStorage.getItem('tenantId')
 async function toggleFavorite() {

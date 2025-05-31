@@ -59,7 +59,7 @@ const props = defineProps({
 
 const favoriteStore = useFavoriteStore()
 const isFavorited = computed(() => {
-  return userStore.isLogin && favoriteStore.list.some(item => item.propertyId === props.propertyId)
+  return favoriteStore.list.some(item => item.propertyId === props.propertyId)
 })
 const tenantId = localStorage.getItem('tenantId')
 console.log("image url", props.image)
@@ -80,9 +80,7 @@ async function toggleFavorite() {
 
 function goToDetail() {
   if (props.propertyId) {
-    router.push(`/property/${props.propertyId}`).then(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+    router.push(`/property/${props.propertyId}`)
   } else {
     console.warn('propertyId 未定義')
   }

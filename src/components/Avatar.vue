@@ -9,16 +9,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
-
-const baseUrl = import.meta.env.VITE_API_BASE_URL
-
-// 傳入的屬性（這邊 src 變成 optional，可以不給）
+import { ref, computed } from 'vue';
 const props = defineProps({
   src: { type: String, default: '' },
   alt: { type: String, default: '頭像' },
-  size: { type: [String, Number], default: 40 },
+  size: { type: [String, Number], default: 40 }, // px
   customClass: { type: String, default: '' },
 })
 
@@ -64,11 +59,9 @@ const avatarStyle = computed(() => ({
   height: typeof props.size === 'number' ? props.size + 'px' : props.size,
   borderRadius: '50%',
   objectFit: 'cover',
-}))
-
+}));
 function onError() {
-  console.warn('圖片載入失敗，使用預設圖')
-  errorFlag.value = true
+  errorFlag.value = true;
 }
 </script>
 

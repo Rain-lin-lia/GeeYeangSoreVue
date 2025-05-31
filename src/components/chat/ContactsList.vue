@@ -18,6 +18,7 @@
                         <div class="contact-last">{{ c.lastMsg }}</div>
                     </div>
                     <span v-if="c.unread" class="unread">{{ c.unread }}</span>
+
                 </div>
             </template>
         </div>
@@ -33,7 +34,6 @@ const search = ref('');
 const filteredContacts = computed(() =>
     props.contacts.filter(c => c.name.includes(search.value))
 );
-const { getLabelFromMessage } = useMessageLabel();
 </script>
 <style scoped>
 .contacts-list {
