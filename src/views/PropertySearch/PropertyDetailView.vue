@@ -20,7 +20,7 @@
                     <MapView v-if="fullAddress" :address="fullAddress" :key="fullAddress" />
                 </div>
                 <div class="row mt-4 mb-5">
-                    <h5 class="component-title">推薦房源</h5>
+                    <h5 class="component-title">探索更多房源</h5>
                     <div>
                         <PropertyCarouselSmall :list="featuredProperties" @open-login="handleOpenLogin" />
                     </div>
@@ -32,7 +32,8 @@
                 </div>
             </div>
         </div>
-        <ChatPopup v-if="isChatOpen" :key="currentChatTenantId" @close="isChatOpen = false" />
+        <!-- 當新註冊房客時點選房東，會有聊天視窗 -->
+        <ChatPopup v-if="isChatOpen" :contact-id="chatContact.id" :contact-name="chatContact.name" :contact-avatar="chatContact.avatar" @close="isChatOpen = false" />
     </div>
 
 </template>
@@ -65,7 +66,7 @@ const images = ref([])
 const landlord = ref(null)
 const featuredProperties = ref([])
 const isChatOpen = ref(false)
-const currentChatTenantId = ref(null)
+const chatContact = ref({})
 
 const allFeatures = [
     { key: 'dog', label: '可養狗', icon: 'fa-solid fa-dog' },
@@ -154,7 +155,7 @@ async function loadPropertyDetail(id) {
         console.log("房源 ID:", id);
         console.log("API 呼叫 URL:", `${API_BASE_URL}/api/PropertySearch/${id}`);
         const res = await axios.get(`${API_BASE_URL}/api/PropertySearch/${id}`)
-        
+
         property.value = res.data.property
         images.value = res.data.images
         landlord.value = res.data.landlord
@@ -202,8 +203,8 @@ function handleOpenLogin() {
     emit('open-login')
 }
 
-function handleOpenChat(landlordTenantId) {
-    currentChatTenantId.value = landlordTenantId
+function handleOpenChat(contact) {
+    chatContact.value = contact
     isChatOpen.value = true
 }
 </script>
