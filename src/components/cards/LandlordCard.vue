@@ -4,12 +4,21 @@
 
         <!-- 橫向排列 -->
         <div class="landlord-info mb-3">
-            <AvatarImage :src="landlord.avatar" :size="100" class="me-3" />
-
+            <img
+                :src="getAvatarUrl(landlord.avatar)"
+                :alt="landlord.name"
+                class="avatar-img me-3"
+                :style="{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover' }"
+            />
             <!-- 名字與電話包一層 -->
             <div class="landlord-text">
-                <h6 class="mb-1">{{ landlord.name }}</h6>
-                <small class="text-muted">{{ landlord.phone }}</small>
+                <h5 class="mb-2">{{ landlord.name }}</h5>
+                <small class="text-muted d-block mb-1">
+                    <i class="fa-solid fa-phone me-2"></i>{{ landlord.phone }}
+                </small>
+                <small class="text-muted d-block">
+                    <i class="fa-solid fa-envelope me-2"></i>{{ landlord.email }}
+                </small>
             </div>
         </div>
 
@@ -17,9 +26,9 @@
             <i class="fa-solid fa-comments me-2"></i> 聯絡房東
         </button>
 
-        <a href="#" class="landlord-btn">
+        <!-- <a href="#" class="landlord-btn">
             查看房東其他物件 <i class="fa-solid fa-chevron-right ms-1"></i>
-        </a>
+        </a> -->
     </div>
 </template>
 
@@ -49,10 +58,22 @@ async function openChat() {
             alert('無法與自己對話');
             return;
         }
-        emit('open-chat', landlordTenantId)
+        emit('open-chat', {
+            id: props.landlord.id,
+            name: props.landlord.name,
+            avatar: props.landlord.avatar
+        })
     } catch (e) {
         alert('請先登入');
     }
+}
+
+function getAvatarUrl(filename) {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  if (!filename || !/^[\w\-.]+\.(jpg|jpeg|png|gif)$/i.test(filename)) {
+    return `${baseUrl}/images/User/default.png`;
+  }
+  return `${baseUrl}/images/User/${filename}`;
 }
 </script>
 

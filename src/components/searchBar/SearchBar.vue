@@ -29,7 +29,7 @@
         <!-- 類型與型態 -->
         <div class="mb-3 d-flex">
           <div class="w-50 me-2">
-            <label class="fw-bold mb-1">類型</label>
+            <label class="fw-bold mb-1">物件類型</label>
             <select class="form-select" v-model="type">
               <option>不限</option>
               <option>整層住家</option>
@@ -40,7 +40,7 @@
             </select>
           </div>
           <div class="w-50">
-            <label class="fw-bold mb-1">型態</label>
+            <label class="fw-bold mb-1">建築型態</label>
             <select class="form-select" v-model="buildingType">
               <option>不限</option>
               <option>公寓</option>
@@ -99,9 +99,13 @@
 
         <!-- 操作按鈕 -->
         <div class="d-flex justify-content-end mt-3">
-          <button type="submit" class="btn custom-search-btn me-2">搜尋</button>
+          <button type="button" class="btn btn-secondary me-2" @click="showFilter = false">
+          關閉
+          </button>
           <button type="button" class="btn btn-outline-secondary me-2" @click="resetFilter">清空</button>
-          <button type="button" class="btn btn-secondary" @click="showFilter = false">關閉</button>
+          <button type="submit" class="btn custom-search-btn">
+            <i class="fa-solid fa-magnifying-glass me-1"></i>搜尋
+          </button>
         </div>
       </form>
     </div>
@@ -210,7 +214,7 @@ function emitSearch() {
   nextTick(() => {
     const section = document.getElementById('property-list-section')
     if (section) {
-      section.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
   })
 }

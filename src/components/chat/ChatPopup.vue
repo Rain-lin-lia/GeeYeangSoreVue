@@ -9,7 +9,7 @@
             :class="['chat-tab', { active: c.id === activeContactId }]"
             @click="switchChat(c.id)"
           >
-            <Avatar :src="c.avatar || defaultAvatar" :alt="c.name" :size="32" />
+            <Avatar :src="c.avatar" :alt="c.name" :size="32" />
           </div>
         </div>
         <button class="close-btn" @click="closePopup">✖</button>
@@ -26,20 +26,21 @@
         :receiver-id="activeContactId"
         :receiver-role="'tenant'"
         :chat-id="null"
+        :is-landlord="userStore.isLandlord"
+        :quick-reply-default-open="false"
         @send="sendMessage"
       />
     </div>
   </template>
   
   <script setup>
-  import { ref, onMounted, onUnmounted, nextTick, watch, watchEffect, defineEmits } from 'vue';
+  import { ref, onMounted, onUnmounted, nextTick, watch, watchEffect, defineEmits, watchEffect as vueWatchEffect } from 'vue';
   import axios from 'axios';
   import * as signalR from '@microsoft/signalr';
   import { useUserStore } from '@/stores/user';
   import ChatWindow from './ChatWindow.vue';
   import ChatInput from './ChatInput.vue';
   import Avatar from '@/components/Avatar.vue';
-  import defaultAvatar from '@/assets/images/avatar/default.png';
   
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
   const SIGNALR_URL = `${API_BASE_URL}/hub`;
@@ -54,6 +55,16 @@
   let connection = null;
   
   const emit = defineEmits(['close']);
+  
+  const userStore = useUserStore();
+  
+  const defaultAvatar = '/images/User/default.png';
+  
+  const props = defineProps({
+    contactId: Number,
+    contactName: String,
+    contactAvatar: String
+  });
   
   async function setupSignalR() {
     connection = new signalR.HubConnectionBuilder()
@@ -94,7 +105,7 @@
           id: msg.hSenderId,
           name: msg.senderName || `聯絡人${msg.hSenderId}`,
           lastMsg: msg.hContent || '',
-          avatar: defaultAvatar,
+          avatar: msg.avatar || defaultAvatar,
           time: msg.hTimestamp ? new Date(msg.hTimestamp).toLocaleTimeString() : '',
         }));
         if (contacts.value.length > 0) {
@@ -184,16 +195,34 @@
       errorMsg.value = '請先登入';
     }
   }
-  
-  watchEffect(async () => {
+  // ChatPopup 開啟時，根據是否有指定聯絡人，決定顯示單一對象或聯絡人列表，並初始化聊天內容與連線
+  vueWatchEffect(async () => {
     if (isOpen.value) {
       await fetchUserInfo();
       if (user.value.id) {
-        await fetchChatList();
-        setupSignalR();
-        scrollToBottom();
+        if (props.contactId) {
+          contacts.value = [{
+            id: props.contactId,
+            name: props.contactName || `聯絡人${props.contactId}`,
+            avatar: props.contactAvatar || defaultAvatar,
+            lastMsg: '',
+            time: ''
+          }];
+          activeContactId.value = props.contactId;
+          fetchMessages(props.contactId);
+          setupSignalR();
+          scrollToBottom();
+        } else {
+          await fetchChatList();
+          setupSignalR();
+          scrollToBottom();
+        }
       }
     }
+  });
+  
+  onMounted(async () => {
+    await userStore.checkAuth();
   });
   
   onUnmounted(() => {
@@ -210,7 +239,7 @@
     position: fixed;
     bottom: 24px;
     right: 24px;
-    width: 350px;
+    width: 360px;
     max-width: 95vw;
     height: 500px;
     background: #fff;

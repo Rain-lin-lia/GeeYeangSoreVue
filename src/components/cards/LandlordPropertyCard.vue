@@ -35,19 +35,29 @@
     </div>
 
     <!-- 房東資訊 -->
-    <div class="right-section d-flex flex-column align-items-center justify-content-start">
-      <div class="landlord-info text-center mb-3">
-        <AvatarImage :src="landlord.avatar" :size="140" class="mb-1" />
-        <h5 class="mb-3">{{ landlord.name }}</h5>
-        <small class="text-muted">{{ landlord.phone }}</small>
+    <div class="right-section landlord-info">
+      <img
+        :src="getAvatarUrl(landlord.avatar)"
+        class="avatar-img mb-4"
+        :style="{ width: '155px', height: '155px', borderRadius: '50%', objectFit: 'cover' }"
+      />
+      <h5 class="mb-2">{{ landlord.name }}</h5>
+      <div class="landlord-text mb-3">
+        
+        <small class="text-muted ms-2 mb-1">
+          <i class="fa-solid fa-phone me-2"></i>{{ landlord.phone }}
+        </small><br>
+        <small class="text-muted ms-2 mb-2">
+          <i class="fa-solid fa-envelope me-2"></i>{{ landlord.email }}
+        </small>
       </div>
 
-      <button class="contact-btn w-100 mb-3" @click="openChat">
+      <button class="contact-btn w-100 " @click="openChat">
         <i class="fa-solid fa-comments me-2"></i> 聯絡房東
       </button>
-      <a href="#" class="landlord-btn p-0">
+      <!-- <a href="#" class="landlord-btn p-0">
         查看房東其他物件 <i class="fa-solid fa-chevron-right ms-1"></i>
-      </a>
+      </a> -->
     </div>
   </div>
 </template>
@@ -88,7 +98,7 @@ function goToDetail() {
 
 const favoriteStore = useFavoriteStore()
 const isFavorited = computed(() => {
-  return favoriteStore.list.some(item => item.propertyId === props.propertyId)
+  return userStore.isLogin && favoriteStore.list.some(item => item.propertyId === props.propertyId)
 })
 const tenantId = localStorage.getItem('tenantId')
 async function toggleFavorite() {
@@ -122,6 +132,14 @@ async function openChat() {
   } catch (e) {
     emit('open-login')
   }
+}
+
+function getAvatarUrl(filename) {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL
+  if (!filename || !/^[\w\-.]+\.(jpg|jpeg|png|gif)$/i.test(filename)) {
+    return `${baseUrl}/images/User/default.png`
+  }
+  return `${baseUrl}/images/User/${filename}`
 }
 </script>
 
@@ -186,7 +204,27 @@ async function openChat() {
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
+  overflow: hidden; 
 }
+
+.right-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url('/image/logo2.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: left -10px bottom -12px;
+  opacity: 0.1; 
+  z-index: 0;
+}
+
+.right-section > * {
+  position: relative;
+  z-index: 1;
+}
+
 
 .rent {
   color: var(--accent);
@@ -212,6 +250,9 @@ async function openChat() {
   margin-bottom: 0.5rem;
   font-weight: bold;
   color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .room-info {
@@ -241,6 +282,15 @@ async function openChat() {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.landlord-text {
+  align-self: flex-start; 
+  text-align: left;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .landlord-extra {
